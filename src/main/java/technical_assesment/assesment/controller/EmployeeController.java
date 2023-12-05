@@ -9,10 +9,12 @@ import technical_assesment.assesment.bean.Employee;
 import technical_assesment.assesment.repository.EmployeeRepository;
 import technical_assesment.assesment.service.EmployeeService;
 
+import javax.lang.model.util.Elements;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/employees")
+@CrossOrigin(origins = "http://localhost:4200/")
 public class EmployeeController {
 
     @Autowired
@@ -22,10 +24,29 @@ public class EmployeeController {
     public List<Employee> getAllEmployees() {
         return employeeService.read();
     }
-    @PostMapping("/create/{id}")
-    public Employee create(@RequestBody Employee employee ,@PathVariable Long managerId){
 
-        return employeeService.create(employee  ,managerId);
+
+
+    @PostMapping("/create")
+    public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee) {
+        Employee savedEmployee = employeeService.saveEmployee(employee);
+        return new ResponseEntity<>(savedEmployee, HttpStatus.CREATED);
+    }
+
+    @PatchMapping("/{employeeId}/assign-manager/{managerId}")
+    public ResponseEntity<Employee> assignManagerToEmployee(
+            @PathVariable Long employeeId,
+            @PathVariable Long managerId) {
+        Employee employee = employeeService.viewEmployee(employeeId);
+        Employee manager = employeeService.viewEmployee(managerId);
+
+        if (employee != null && manager != null) {
+            employee.setManager(manager);
+            Employee updatedEmployee = employeeService.saveEmployee(employee);
+            return new ResponseEntity<>(updatedEmployee, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id){
@@ -37,15 +58,32 @@ public class EmployeeController {
     return employeeService.updateEmployee(id,updatedEmployee);
     }
 
-    @PostMapping("/manager")
+
+    //create a manager
+    @PostMapping("/managers")
     public ResponseEntity<Employee> createManager(@RequestBody Employee manager) {
-        Employee result = employeeService.createManager(manager);
-        return new ResponseEntity<>(result, HttpStatus.CREATED);
+        // Additional validation or manager-specific logic if needed
+        manager.setIsManager(true);
+        Employee savedManager = employeeService.saveEmployee(manager);
+        return new ResponseEntity<>(savedManager, HttpStatus.CREATED);
     }
+
+    //viewing all managers
     @GetMapping("/managers")
-    public List<Employee> allManagers(){
-      return  employeeService.managers();
+    public ResponseEntity<List<Employee>> getAllManagers() {
+        List<Employee> managers = employeeService.viewAllManagers();
+        return new ResponseEntity<>(managers, HttpStatus.OK);
     }
+
+
+//promote employe to be a manager
+@PatchMapping("/{employeeId}/promote")
+public ResponseEntity<Employee> promoteToManager(@PathVariable Long employeeId) {
+    Employee promotedEmployee = employeeService.promoteToManager(employeeId);
+    return new ResponseEntity<>(promotedEmployee, HttpStatus.OK);
+}
+
+
 
 }
 

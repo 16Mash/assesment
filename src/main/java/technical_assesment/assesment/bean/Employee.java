@@ -1,7 +1,11 @@
 package technical_assesment.assesment.bean;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
+import technical_assesment.assesment.EmployeeType;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -17,20 +21,24 @@ public class Employee {
     private LocalDate birth;
     private Double salary;
     private String position;
-    boolean isManager;
+    private boolean isManager;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_id")
+    @JoinColumn(name = "manager_id" , referencedColumnName = "id")
+
+
     private Employee manager;
+    private EmployeeType employeeType;
 
-
-    public Employee(String name, String surname, LocalDate birth, Double salary, String position, boolean isManager) {
+    public Employee(String name, String surname, LocalDate birth, Double salary, String position,
+                    boolean isManager, Employee manager, EmployeeType employeeType) {
         this.name = name;
         this.surname = surname;
         this.birth = birth;
         this.salary = salary;
         this.position = position;
         this.isManager = isManager;
-
+        this.manager = manager;
+        this.employeeType = employeeType;
     }
 
     public Employee() {
@@ -99,5 +107,13 @@ public class Employee {
 
     public void setIsManager(boolean isManager) {
         this.isManager = isManager;
+    }
+
+    public EmployeeType getEmployeeType() {
+        return employeeType;
+    }
+
+    public void setEmployeeType(EmployeeType employeeType) {
+        this.employeeType = employeeType;
     }
 }

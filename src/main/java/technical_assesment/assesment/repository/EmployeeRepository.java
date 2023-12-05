@@ -12,7 +12,6 @@ import java.util.Optional;
 @Transactional
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
-    Optional<Employee> findById(Long id);
     List<Employee> findByIsManagerTrue();
 
     Optional<Employee> findByIdAndIsManagerTrue(Long employeeId);

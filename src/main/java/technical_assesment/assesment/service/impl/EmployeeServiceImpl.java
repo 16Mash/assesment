@@ -2,10 +2,13 @@ package technical_assesment.assesment.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import org.hibernate.sql.Insert;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import technical_assesment.assesment.EmployeeType;
 import technical_assesment.assesment.bean.Employee;
+import technical_assesment.assesment.bean.EmployeeDTO;
+import technical_assesment.assesment.exception.EmployeeNotFoundException;
 import technical_assesment.assesment.repository.EmployeeRepository;
 import technical_assesment.assesment.service.EmployeeService;
 
@@ -18,23 +21,40 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     EmployeeRepository employeeRepository;
-
-
-
-
+    @Autowired
+    private ModelMapper modelMapper;
     @Override
-    public Employee create(Employee employee ,Long managerId) {
-        managerId = employee.getId();
-        Employee manager = employeeRepository.findByIdAndIsManagerTrue(managerId).orElse(null);
-
-        if (employee != null && manager != null) {
-            employee.setManager(manager);
-            return employeeRepository.save(employee);
-        }else{
-         return null;
+    public EmployeeDTO mapToDTO(Employee employee) {
+        modelMapper.getConfiguration().setAmbiguityIgnored(true);
+        EmployeeDTO employeeDTO = modelMapper.map(employee, EmployeeDTO.class);
+        if (employee.getManager() != null) {
+            employeeDTO.setManagerId(employee.getManager().getId());
         }
-
+        return employeeDTO;
     }
+    @Override
+    public Employee saveEmployee(Employee employee) {
+        switch (employee.getEmployeeType()) {
+            case EMPLOYEE:
+                employee.setEmployeeType(EmployeeType.EMPLOYEE);
+                break;
+
+            case CEO:
+                employee.setEmployeeType(EmployeeType.CEO);
+                employee.setIsManager(false); // CEO cannot have a manager
+                break;
+
+            case MANAGER:
+                employee.setEmployeeType(EmployeeType.MANAGER);
+                employee.setIsManager(true);
+                break;
+
+            default:
+                break;
+        }
+        return employeeRepository.save(employee);
+    }
+
 
     @Override
     public void delete(Long id) {
@@ -70,8 +90,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Optional<Employee> viewEmployee(Long id) {
-        return employeeRepository.findById(id);
+    public Employee viewEmployee(Long id) {
+        return employeeRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -83,6 +103,22 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public List<Employee> managers() {
         return employeeRepository.findByIsManagerTrue();
+    }
+
+    @Override
+    public List<Employee> viewAllManagers() {
+        return employeeRepository.findByIsManagerTrue();
+    }
+
+    @Override
+    public Employee promoteToManager(Long id) {Optional<Employee> employeeOptional = employeeRepository.findById(id);
+        if (employeeOptional.isPresent()) {
+            Employee employee = employeeOptional.get();
+            employee.setIsManager(true); // Set the employee as a manager
+            return employeeRepository.save(employee);
+        } else {
+            throw new EmployeeNotFoundException("Employee with ID " + id + " not found.");
+        }
     }
 
 
