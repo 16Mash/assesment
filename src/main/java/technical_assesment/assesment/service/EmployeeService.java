@@ -11,7 +11,7 @@ public interface EmployeeService {
     public Employee saveEmployee(Employee employee);
     public void delete(Long id);
     public Employee updateEmployee(Long id, Employee updatedEmployee);
-    public List<Employee> read ();
+    public List<EmployeeDTO> read ();
     public Employee viewEmployee(Long id);
 
     public Employee createManager(Employee manager);

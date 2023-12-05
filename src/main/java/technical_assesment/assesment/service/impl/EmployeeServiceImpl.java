@@ -21,27 +21,43 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     EmployeeRepository employeeRepository;
-    @Autowired
-    private ModelMapper modelMapper;
+
     @Override
     public EmployeeDTO mapToDTO(Employee employee) {
-        modelMapper.getConfiguration().setAmbiguityIgnored(true);
-        EmployeeDTO employeeDTO = modelMapper.map(employee, EmployeeDTO.class);
-        if (employee.getManager() != null) {
-            employeeDTO.setManagerId(employee.getManager().getId());
+        EmployeeDTO dto = new EmployeeDTO();
+        dto.setName(employee.getName());
+        dto.setSurname(employee.getSurname());
+        dto.setBirth(employee.getBirth());
+        dto.setEmployeeType(employee.getEmployeeType());
+        dto.setId(employee.getId());
+        dto.setManager(employee.isManager());
+        dto.setPosition(employee.getPosition());
+        dto.setSalary(employee.getSalary());
+        Employee man = employee.getManager();
+        if(man!=null){
+            dto.setManagerId(man.getId());
+            Employee manager = employeeRepository.findById(employee.getManager().getId()).orElse(null);
+            if (manager != null) {
+                dto.setManagerName(manager.getName());
+
+            }
         }
-        return employeeDTO;
+   return dto;
     }
     @Override
     public Employee saveEmployee(Employee employee) {
+
+
         switch (employee.getEmployeeType()) {
             case EMPLOYEE:
+
                 employee.setEmployeeType(EmployeeType.EMPLOYEE);
                 break;
 
             case CEO:
+
                 employee.setEmployeeType(EmployeeType.CEO);
-                employee.setIsManager(false); // CEO cannot have a manager
+                employee.setIsManager(false);
                 break;
 
             case MANAGER:
@@ -75,6 +91,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 employee.setSurname(updatedEmployee.getSurname());
                 employee.setSalary(updatedEmployee.getSalary());
                 employee.setManager(updatedEmployee.getManager());
+
                 return employeeRepository.save(employee);
 
         }else {
@@ -85,8 +102,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
     @Override
-    public List<Employee> read() {
-        return employeeRepository.findAll();
+    public List<EmployeeDTO> read() {
+
+        List<EmployeeDTO> emps = employeeRepository.findAll().stream().map(this::mapToDTO).toList();
+
+
+        return emps;
     }
 
     @Override

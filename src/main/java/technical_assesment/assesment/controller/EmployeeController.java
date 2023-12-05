@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import technical_assesment.assesment.bean.Employee;
+import technical_assesment.assesment.bean.EmployeeDTO;
 import technical_assesment.assesment.repository.EmployeeRepository;
 import technical_assesment.assesment.service.EmployeeService;
 
@@ -21,7 +22,7 @@ public class EmployeeController {
    EmployeeService employeeService;
 
     @GetMapping
-    public List<Employee> getAllEmployees() {
+    public List<EmployeeDTO> getAllEmployees() {
         return employeeService.read();
     }
 

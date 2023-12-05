@@ -1,14 +1,9 @@
 package technical_assesment.assesment.bean;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.NoArgsConstructor;
 import technical_assesment.assesment.EmployeeType;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Entity
 public class Employee {
@@ -22,21 +17,23 @@ public class Employee {
     private Double salary;
     private String position;
     private boolean isManager;
+    private String managerName;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_id" , referencedColumnName = "id")
-
-
+    @JoinColumn(name = "manager_id")
     private Employee manager;
+
+
     private EmployeeType employeeType;
 
     public Employee(String name, String surname, LocalDate birth, Double salary, String position,
-                    boolean isManager, Employee manager, EmployeeType employeeType) {
+                    boolean isManager, String managerName, Employee manager, EmployeeType employeeType) {
         this.name = name;
         this.surname = surname;
         this.birth = birth;
         this.salary = salary;
         this.position = position;
         this.isManager = isManager;
+        this.managerName = managerName;
         this.manager = manager;
         this.employeeType = employeeType;
     }
@@ -101,6 +98,21 @@ public class Employee {
         this.manager = manager;
     }
 
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", birth=" + birth +
+                ", salary=" + salary +
+                ", position='" + position + '\'' +
+                ", isManager=" + isManager +
+                ", manager=" + manager +
+                ", employeeType=" + employeeType +
+                '}';
+    }
+
     public boolean isManager() {
         return isManager;
     }
@@ -115,5 +127,13 @@ public class Employee {
 
     public void setEmployeeType(EmployeeType employeeType) {
         this.employeeType = employeeType;
+    }
+
+    public String getManagerName() {
+        return managerName;
+    }
+
+    public void setManagerName(String managerName) {
+        this.managerName = managerName;
     }
 }

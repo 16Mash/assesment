@@ -14,11 +14,15 @@ public class EmployeeDTO {
         private String position;
         private boolean isManager;
         private Long managerId;
+        private String managerName;
 
         private EmployeeType employeeType;
 
-        public EmployeeDTO(Long id, String name, String surname, LocalDate birth, Double salary,
-                           String position, boolean isManager, Long managerId, EmployeeType employeeType) {
+    public EmployeeDTO() {
+    }
+
+    public EmployeeDTO(Long id, String name, String surname, LocalDate birth, Double salary,
+                       String position, boolean isManager, Long managerId, String managerName, EmployeeType employeeType) {
             this.id = id;
             this.name = name;
             this.surname = surname;
@@ -26,8 +30,9 @@ public class EmployeeDTO {
             this.salary = salary;
             this.position = position;
             this.isManager = isManager;
-            this.managerId = managerId; // Set manager's ID
-            this.employeeType = employeeType;
+            this.managerId = managerId;
+        this.managerName = managerName;
+        this.employeeType = employeeType;
         }
 
 
@@ -103,6 +108,14 @@ public class EmployeeDTO {
         public void setEmployeeType(EmployeeType employeeType) {
             this.employeeType = employeeType;
         }
+
+    public String getManagerName() {
+        return managerName;
     }
+
+    public void setManagerName(String managerName) {
+        this.managerName = managerName;
+    }
+}
 
 
