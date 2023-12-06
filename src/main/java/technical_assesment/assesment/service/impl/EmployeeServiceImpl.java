@@ -57,7 +57,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             case CEO:
 
                 employee.setEmployeeType(EmployeeType.CEO);
-                employee.setIsManager(false);
+                employee.setIsManager(true);
                 break;
 
             case MANAGER:
@@ -106,7 +106,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         List<EmployeeDTO> emps = employeeRepository.findAll().stream().map(this::mapToDTO).toList();
 
-
         return emps;
     }
 
@@ -122,23 +121,20 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<Employee> managers() {
-        return employeeRepository.findByIsManagerTrue();
+    public List<EmployeeDTO> viewAllManagers() {
+        List<EmployeeDTO> managers = employeeRepository.findByIsManagerTrue().stream().map(this::mapToDTO).toList();
+        return managers;
     }
 
     @Override
-    public List<Employee> viewAllManagers() {
-        return employeeRepository.findByIsManagerTrue();
-    }
-
-    @Override
-    public Employee promoteToManager(Long id) {Optional<Employee> employeeOptional = employeeRepository.findById(id);
-        if (employeeOptional.isPresent()) {
+    public Employee promoteToManager(Long id) {
+        Optional<Employee> employeeOptional = employeeRepository.findById(id);
+        if (employeeOptional.isPresent() &&  employeeRepository.findByIdAndIsManagerTrue(id).isEmpty()) {
             Employee employee = employeeOptional.get();
-            employee.setIsManager(true); // Set the employee as a manager
+            employee.setIsManager(true);
             return employeeRepository.save(employee);
         } else {
-            throw new EmployeeNotFoundException("Employee with ID " + id + " not found.");
+            throw new EmployeeNotFoundException("Employee with ID " + id + " not found/Already a manager.");
         }
     }
 

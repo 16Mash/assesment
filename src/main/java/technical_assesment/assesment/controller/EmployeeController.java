@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import technical_assesment.assesment.EmployeeType;
 import technical_assesment.assesment.bean.Employee;
 import technical_assesment.assesment.bean.EmployeeDTO;
 import technical_assesment.assesment.repository.EmployeeRepository;
@@ -19,6 +21,8 @@ import java.util.List;
 public class EmployeeController {
 
     @Autowired
+    EmployeeRepository employeeRepository;
+    @Autowired
    EmployeeService employeeService;
 
     @GetMapping
@@ -30,7 +34,13 @@ public class EmployeeController {
 
     @PostMapping("/create")
     public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee) {
+
+        Enum t = employee.getEmployeeType();
+        if (t.equals(EmployeeType.CEO) &&employeeRepository.findByEmployeeTypeTrue().isPresent()){
+            throw new IllegalStateException( "CEO Already Exists: Company can have only one CEO");
+        }
         Employee savedEmployee = employeeService.saveEmployee(employee);
+        System.out.println(t);
         return new ResponseEntity<>(savedEmployee, HttpStatus.CREATED);
     }
 
@@ -61,7 +71,7 @@ public class EmployeeController {
 
 
     //create a manager
-    @PostMapping("/managers")
+    @PostMapping("/add-manager")
     public ResponseEntity<Employee> createManager(@RequestBody Employee manager) {
         // Additional validation or manager-specific logic if needed
         manager.setIsManager(true);
@@ -70,9 +80,9 @@ public class EmployeeController {
     }
 
     //viewing all managers
-    @GetMapping("/managers")
-    public ResponseEntity<List<Employee>> getAllManagers() {
-        List<Employee> managers = employeeService.viewAllManagers();
+    @GetMapping("/view-managers")
+    public ResponseEntity<List<EmployeeDTO>> getAllManagers() {
+        List<EmployeeDTO> managers = employeeService.viewAllManagers();
         return new ResponseEntity<>(managers, HttpStatus.OK);
     }
 

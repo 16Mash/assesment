@@ -15,8 +15,7 @@ public interface EmployeeService {
     public Employee viewEmployee(Long id);
 
     public Employee createManager(Employee manager);
-    public List<Employee> managers ();
 
-    public List<Employee> viewAllManagers();
+    public List<EmployeeDTO> viewAllManagers();
     public Employee promoteToManager(Long id);
 }

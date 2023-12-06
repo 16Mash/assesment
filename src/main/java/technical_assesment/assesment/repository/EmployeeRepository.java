@@ -15,5 +15,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     List<Employee> findByIsManagerTrue();
 
     Optional<Employee> findByIdAndIsManagerTrue(Long employeeId);
+    Optional<Employee> findByEmployeeTypeTrue();
+    Optional<Employee> findByIdAndEmployeeTypeTrue(Long id);
+
 
 }
