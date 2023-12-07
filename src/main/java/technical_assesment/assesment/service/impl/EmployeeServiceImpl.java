@@ -113,7 +113,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Employee viewEmployee(Long id) {
         return employeeRepository.findById(id).orElse(null);
     }
-
+    @Override
+    public EmployeeDTO employee(Long id) {
+        Employee emp = employeeRepository.findById(id).orElse(null);
+        return mapToDTO(emp);
+    }
     @Override
     public Employee createManager(Employee manager) {
         manager.setIsManager(true);

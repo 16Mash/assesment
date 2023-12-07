@@ -13,6 +13,7 @@ public interface EmployeeService {
     public Employee updateEmployee(Long id, Employee updatedEmployee);
     public List<EmployeeDTO> read ();
     public Employee viewEmployee(Long id);
+    public EmployeeDTO employee (Long id);
 
     public Employee createManager(Employee manager);
 

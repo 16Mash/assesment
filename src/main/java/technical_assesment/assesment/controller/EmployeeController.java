@@ -9,6 +9,7 @@ import org.springframework.web.server.ResponseStatusException;
 import technical_assesment.assesment.EmployeeType;
 import technical_assesment.assesment.bean.Employee;
 import technical_assesment.assesment.bean.EmployeeDTO;
+import technical_assesment.assesment.exception.EmployeeNotFoundException;
 import technical_assesment.assesment.repository.EmployeeRepository;
 import technical_assesment.assesment.service.EmployeeService;
 
@@ -43,7 +44,14 @@ public class EmployeeController {
         System.out.println(t);
         return new ResponseEntity<>(savedEmployee, HttpStatus.CREATED);
     }
+ @GetMapping("/view-employee/{id}")
+         public EmployeeDTO viewEmployee(@PathVariable Long id){
+        if (employeeRepository.findById(id).isPresent()){
+            return employeeService.employee(id);
+        }
+        throw new EmployeeNotFoundException("Employee with id :" + id + " Not Found");
 
+         }
     @PatchMapping("/{employeeId}/assign-manager/{managerId}")
     public ResponseEntity<Employee> assignManagerToEmployee(
             @PathVariable Long employeeId,
@@ -51,12 +59,12 @@ public class EmployeeController {
         Employee employee = employeeService.viewEmployee(employeeId);
         Employee manager = employeeService.viewEmployee(managerId);
 
-        if (employee != null && manager != null) {
+        if (employee != null && manager != null && employeeRepository.findByIdAndIsManagerTrue(managerId).isPresent()) {
             employee.setManager(manager);
             Employee updatedEmployee = employeeService.saveEmployee(employee);
             return new ResponseEntity<>(updatedEmployee, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new IllegalStateException("Employee/Manager Not Found/Assigning employee with a none manager employee");
         }
     }
     @DeleteMapping("/{id}")
@@ -73,7 +81,7 @@ public class EmployeeController {
     //create a manager
     @PostMapping("/add-manager")
     public ResponseEntity<Employee> createManager(@RequestBody Employee manager) {
-        // Additional validation or manager-specific logic if needed
+
         manager.setIsManager(true);
         Employee savedManager = employeeService.saveEmployee(manager);
         return new ResponseEntity<>(savedManager, HttpStatus.CREATED);
