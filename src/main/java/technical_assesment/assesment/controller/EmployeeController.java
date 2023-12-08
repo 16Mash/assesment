@@ -37,8 +37,10 @@ public class EmployeeController {
     public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee) {
 
         Enum t = employee.getEmployeeType();
-        if (t.equals(EmployeeType.CEO) &&employeeRepository.findByEmployeeTypeTrue().isPresent()){
+        if (t.equals(EmployeeType.CEO) && employeeRepository.findByEmployeeType(EmployeeType.CEO).isPresent()){
+            System.out.println(t);
             throw new IllegalStateException( "CEO Already Exists: Company can have only one CEO");
+
         }
         Employee savedEmployee = employeeService.saveEmployee(employee);
         System.out.println(t);
@@ -67,7 +69,7 @@ public class EmployeeController {
             throw new IllegalStateException("Employee/Manager Not Found/Assigning employee with a none manager employee");
         }
     }
-    @DeleteMapping("/{id}")
+    @DeleteMapping("delete/{id}")
     public void delete(@PathVariable Long id){
          employeeService.delete(id);
     }
@@ -93,6 +95,13 @@ public class EmployeeController {
         List<EmployeeDTO> managers = employeeService.viewAllManagers();
         return new ResponseEntity<>(managers, HttpStatus.OK);
     }
+    @GetMapping("/manager-employees/{managerId}")
+    public List<EmployeeDTO> getEmployeesManagers(@PathVariable Long managerId){
+
+    return employeeService.getEmployeesByManagerId(managerId);
+    }
+
+
 
 
 //promote employe to be a manager

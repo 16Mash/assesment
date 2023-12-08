@@ -12,8 +12,10 @@ import technical_assesment.assesment.exception.EmployeeNotFoundException;
 import technical_assesment.assesment.repository.EmployeeRepository;
 import technical_assesment.assesment.service.EmployeeService;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 
@@ -34,6 +36,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         dto.setPosition(employee.getPosition());
         dto.setSalary(employee.getSalary());
         Employee man = employee.getManager();
+
         if(man!=null){
             dto.setManagerId(man.getId());
             Employee manager = employeeRepository.findById(employee.getManager().getId()).orElse(null);
@@ -74,7 +77,13 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public void delete(Long id) {
-         employeeRepository.deleteById(id);
+  try {
+      employeeRepository.deleteById(id);
+
+  }catch (IllegalStateException ex){
+      throw new IllegalStateException("Failed to Delete!!");
+  }
+
     }
 
     @Override
@@ -129,6 +138,16 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<EmployeeDTO> managers = employeeRepository.findByIsManagerTrue().stream().map(this::mapToDTO).toList();
         return managers;
     }
+    @Override
+    public List<EmployeeDTO> getEmployeesByManagerId(Long managerId) {
+        List<EmployeeDTO> employeesManager = employeeRepository.findEmployeesByManagerId(managerId).stream().map(this::mapToDTO).toList();
+
+        System.out.println(  employeesManager.size());
+        return employeesManager;
+
+    }
+
+
 
     @Override
     public Employee promoteToManager(Long id) {
@@ -141,6 +160,8 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new EmployeeNotFoundException("Employee with ID " + id + " not found/Already a manager.");
         }
     }
+
+
 
 
 }
