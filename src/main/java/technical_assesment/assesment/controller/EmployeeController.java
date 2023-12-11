@@ -105,13 +105,17 @@ public class EmployeeController {
 
 
 //promote employe to be a manager
-@PatchMapping("/{employeeId}/promote")
+@PatchMapping("/promote/{employeeId}")
 public ResponseEntity<Employee> promoteToManager(@PathVariable Long employeeId) {
     Employee promotedEmployee = employeeService.promoteToManager(employeeId);
     return new ResponseEntity<>(promotedEmployee, HttpStatus.OK);
 }
+@GetMapping("/all")
 
-
+public ResponseEntity<List<EmployeeDTO>> all() {
+    List<EmployeeDTO> managersWithEMp = employeeService.all();
+    return new ResponseEntity<>(managersWithEMp, HttpStatus.OK);
+}
 
 }
 

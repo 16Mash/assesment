@@ -20,4 +20,5 @@ public interface EmployeeService {
     public List<EmployeeDTO> viewAllManagers();
     public Employee promoteToManager(Long id);
     List<EmployeeDTO>getEmployeesByManagerId(Long managerId);
+    List<EmployeeDTO> all();
 }

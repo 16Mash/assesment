@@ -136,17 +136,21 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public List<EmployeeDTO> viewAllManagers() {
         List<EmployeeDTO> managers = employeeRepository.findByIsManagerTrue().stream().map(this::mapToDTO).toList();
+
         return managers;
     }
     @Override
     public List<EmployeeDTO> getEmployeesByManagerId(Long managerId) {
         List<EmployeeDTO> employeesManager = employeeRepository.findEmployeesByManagerId(managerId).stream().map(this::mapToDTO).toList();
-
-        System.out.println(  employeesManager.size());
         return employeesManager;
 
     }
 
+    @Override
+    public List<EmployeeDTO> all() {
+        List<EmployeeDTO> emps = employeeRepository.findAllByManagerIdIsNotNull().stream().map(this::mapToDTO).toList();
+        return emps;
+    }
 
 
     @Override
@@ -155,6 +159,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (employeeOptional.isPresent() &&  employeeRepository.findByIdAndIsManagerTrue(id).isEmpty()) {
             Employee employee = employeeOptional.get();
             employee.setIsManager(true);
+            employee.setEmployeeType(EmployeeType.MANAGER);
             return employeeRepository.save(employee);
         } else {
             throw new EmployeeNotFoundException("Employee with ID " + id + " not found/Already a manager.");
