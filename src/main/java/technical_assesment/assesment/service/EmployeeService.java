@@ -1,5 +1,6 @@
 package technical_assesment.assesment.service;
 
+import technical_assesment.assesment.EmployeeType;
 import technical_assesment.assesment.bean.Employee;
 import technical_assesment.assesment.bean.EmployeeDTO;
 
@@ -21,4 +22,5 @@ public interface EmployeeService {
     public Employee promoteToManager(Long id);
     List<EmployeeDTO>getEmployeesByManagerId(Long managerId);
     List<EmployeeDTO> all();
+    Optional<Employee> findEmployeeByType(EmployeeType emp);
 }

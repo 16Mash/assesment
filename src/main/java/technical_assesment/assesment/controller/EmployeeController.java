@@ -15,6 +15,7 @@ import technical_assesment.assesment.service.EmployeeService;
 
 import javax.lang.model.util.Elements;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/employees")
@@ -30,8 +31,6 @@ public class EmployeeController {
     public List<EmployeeDTO> getAllEmployees() {
         return employeeService.read();
     }
-
-
 
     @PostMapping("/create")
     public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee) {
@@ -80,6 +79,7 @@ public class EmployeeController {
     }
 
 
+
     //create a manager
     @PostMapping("/add-manager")
     public ResponseEntity<Employee> createManager(@RequestBody Employee manager) {
@@ -101,21 +101,24 @@ public class EmployeeController {
     return employeeService.getEmployeesByManagerId(managerId);
     }
 
+    @GetMapping("/type/{emp}")
+    public Optional<Employee> getEmpWithType(@RequestBody @PathVariable EmployeeType emp){
+         return employeeService.findEmployeeByType(emp);
+    }
 
 
+        //promote employe to be a manager
+        @PatchMapping("/promote/{employeeId}")
+        public ResponseEntity<Employee> promoteToManager(@PathVariable Long employeeId) {
+            Employee promotedEmployee = employeeService.promoteToManager(employeeId);
+            return new ResponseEntity<>(promotedEmployee, HttpStatus.OK);
+        }
+        @GetMapping("/all")
 
-//promote employe to be a manager
-@PatchMapping("/promote/{employeeId}")
-public ResponseEntity<Employee> promoteToManager(@PathVariable Long employeeId) {
-    Employee promotedEmployee = employeeService.promoteToManager(employeeId);
-    return new ResponseEntity<>(promotedEmployee, HttpStatus.OK);
-}
-@GetMapping("/all")
-
-public ResponseEntity<List<EmployeeDTO>> all() {
-    List<EmployeeDTO> managersWithEMp = employeeService.all();
-    return new ResponseEntity<>(managersWithEMp, HttpStatus.OK);
-}
+        public ResponseEntity<List<EmployeeDTO>> all() {
+            List<EmployeeDTO> managersWithEMp = employeeService.all();
+            return new ResponseEntity<>(managersWithEMp, HttpStatus.OK);
+        }
 
 }
 

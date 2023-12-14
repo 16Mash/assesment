@@ -152,6 +152,16 @@ public class EmployeeServiceImpl implements EmployeeService {
         return emps;
     }
 
+    @Override
+    public Optional<Employee> findEmployeeByType(EmployeeType emp) {
+
+  Optional<Employee> empType = employeeRepository.findByEmployeeType(emp);
+        if (empType !=null){
+            return empType;
+        }
+   throw new EmployeeNotFoundException("Employee Not Found");
+    }
+
 
     @Override
     public Employee promoteToManager(Long id) {
